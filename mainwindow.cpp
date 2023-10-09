@@ -180,6 +180,7 @@ QList <QPushButton*> MainWindow::findCurrectCell()
 void MainWindow::onStart()
 {
    _countNoEmptyCell = 0;
+   _ch=2;
     QPalette palette;
    palette.setColor(QPalette::Background,Qt::yellow);
    ui->labelPlayer->setPalette(palette);
