@@ -2,11 +2,14 @@
 #include "ui_winnerwindow.h"
 #include <QDebug>
 
+const QString kWinnerWindowTitle = "Крестики-Нолики";
+
 WinnerWindow::WinnerWindow(QDialog *parent) :
     QDialog(parent),
     ui(new Ui::WinnerWindow)
 {
     ui->setupUi(this);
+    setWindowTitle(kWinnerWindowTitle);
     connect(ui->pushButtonNewGame, &QPushButton::clicked, this, &WinnerWindow::onClickedPushButtonNewGame);
 }
 

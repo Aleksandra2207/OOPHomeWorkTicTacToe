@@ -3,13 +3,16 @@
 #include <QDebug>
 #include <QRandomGenerator>
 
-const int countCell=9;
+const QString kPerson = "person";
+const QString kComputer = "computer";
+const QString kMainWindowTitle = "Крестики-Нолики";
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle(kMainWindowTitle);
     _pCells.append(ui->pushButton_1);
     _pCells.append(ui->pushButton_2);
     _pCells.append(ui->pushButton_3);
@@ -20,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     _pCells.append(ui->pushButton_8);
     _pCells.append(ui->pushButton_9);
     connections();
-    _countNoEmptyCell = 0;
 }
 
 MainWindow::~MainWindow()
@@ -30,20 +32,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::connections()
 {
-    connect(ui->pushButton_1, &QPushButton::clicked, this, &MainWindow::onTic1);
-    connect(ui->pushButton_2, &QPushButton::clicked, this, &MainWindow::onTic2);
-    connect(ui->pushButton_3, &QPushButton::clicked, this, &MainWindow::onTic3);
-    connect(ui->pushButton_4, &QPushButton::clicked, this, &MainWindow::onTic4);
-    connect(ui->pushButton_5, &QPushButton::clicked, this, &MainWindow::onTic5);
-    connect(ui->pushButton_6, &QPushButton::clicked, this, &MainWindow::onTic6);
-    connect(ui->pushButton_7, &QPushButton::clicked, this, &MainWindow::onTic7);
-    connect(ui->pushButton_8, &QPushButton::clicked, this, &MainWindow::onTic8);
-    connect(ui->pushButton_9, &QPushButton::clicked, this, &MainWindow::onTic9);
+    connect(ui->pushButton_1, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_2, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_3, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_4, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_5, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_6, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_7, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_8, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
+    connect(ui->pushButton_9, &QPushButton::clicked, this, &MainWindow::onPushButtonCliked);
     connect(ui->pushButtonResetPlay, &QPushButton::clicked, this, &MainWindow::onClickedReset);
 
 }
 
-void MainWindow::passComputerMove()
+void MainWindow::onPassComputerMove()
 {
     onblokField(false);
     QPalette palette;
@@ -53,7 +55,7 @@ void MainWindow::passComputerMove()
     ui->labelComputer->setPalette(palette);
 }
 
-void MainWindow::passPersonMove()
+void MainWindow::onPassPersonMove()
 {
     onblokField(true);
     QPalette palette;
@@ -63,21 +65,68 @@ void MainWindow::passPersonMove()
     ui->labelComputer->setPalette(palette);
 }
 
-void MainWindow::computerMove()
+void MainWindow::onPushButtonCliked()
 {
-    //ищем свободные клетки
-     QList <QPushButton*> emptyCells = findCurrectCell();
-     //выбиаем рандомную пустую клетку чтобы заполнить ее
-     if(emptyCells.isEmpty())
-         return;
-     int i = QRandomGenerator::global()->bounded(emptyCells.length()-1);
-    //заполняем клетку 0 и передаем ход человеку
-    emptyCells.at(i)->setText("0");
-    _countNoEmptyCell++;
-    if (onCheckForFinish("0") || onCheckForFinish("X"))
-            return;
-    emit computerMoveIsComplited();
+    QObject* button = QObject::sender();
+    bool isOk = false;
+     if(button == ui->pushButton_1 && ui->pushButton_1->text().isEmpty())
+     {
+         ui->pushButton_1->setText(_signPlayer1);
+         isOk = true;
+     }
+     if(button == ui->pushButton_2 && ui->pushButton_2->text().isEmpty())
+     {
+         ui->pushButton_2->setText(_signPlayer1);
+          isOk = true;
+     }
+     if(button == ui->pushButton_3 && ui->pushButton_3->text().isEmpty())
+     {
+         ui->pushButton_3->setText(_signPlayer1);
+          isOk = true;
+     }
+     if(button == ui->pushButton_4 && ui->pushButton_4->text().isEmpty())
+     {
+          ui->pushButton_4->setText(_signPlayer1);
+         isOk = true;
+     }
+     if(button == ui->pushButton_5 && ui->pushButton_5->text().isEmpty())
+     {
+         ui->pushButton_5->setText(_signPlayer1);
+         isOk = true;
+     }
+     if(button == ui->pushButton_6 && ui->pushButton_6->text().isEmpty())
+     {
+         ui->pushButton_6->setText(_signPlayer1);
+         isOk = true;
+     }
+     if(button == ui->pushButton_7 && ui->pushButton_7->text().isEmpty())
+     {
+         ui->pushButton_7->setText(_signPlayer1);
+         isOk = true;
+     }
+     if(button == ui->pushButton_8 && ui->pushButton_8->text().isEmpty())
+     {
+         ui->pushButton_8->setText(_signPlayer1);
+         isOk = true;
+     }
+     if(button == ui->pushButton_9 && ui->pushButton_9->text().isEmpty())
+     {
+         ui->pushButton_9->setText(_signPlayer1);
+         isOk = true;
+     }
+     if(isOk==true)
+         emit doCheck(getField(), kPerson);
+}
 
+void MainWindow::onSetSingPlayer1(QString sign)
+{
+    _signPlayer1 = sign;
+}
+
+void MainWindow::onMakeComputerMove(int i, QString sign)
+{
+    _pCells.at(i)->setText(sign);
+    emit doCheck(getField(), kComputer);
 }
 
 void MainWindow::setPlayerName(QString name)
@@ -105,6 +154,16 @@ void MainWindow::cleanField()
     }
 }
 
+QStringList MainWindow::getField()
+{
+    QStringList field;
+    foreach(QPushButton* cell, _pCells)
+    {
+        field.append(cell->text());
+    }
+    return field;
+}
+
 void MainWindow::onblokField(bool isUnblok)
 {
     foreach (QPushButton* cell, _pCells)
@@ -113,166 +172,8 @@ void MainWindow::onblokField(bool isUnblok)
     }
 }
 
-bool MainWindow::onCheckForFinish(QString value)
-{
-    int ch=0;
-    for (int i=0; i<=6;)
-    {
-        int j=i+1, k=i+2;
-        if(_pCells.at(i)->text() == value && _pCells.at(j)->text()== value && _pCells.at(k)->text() == value)
-        {
-            ch++;
-            emit finish(value);
-            return true;
-        }
-        i+=3;
-    }
-    for (int i=0; i<=2; i++)
-    {
-        int j=i+3, k=i+6;
-        if(_pCells.at(i)->text() == value && _pCells.at(j)->text()== value && _pCells.at(k)->text() == value)
-        {
-            ch++;
-            emit finish(value);
-            return true;
-        }
-    }
-    if(_pCells.at(0)->text() == value && _pCells.at(4)->text()== value && _pCells.at(8)->text() == value)
-    {
-        ch++;
-        emit finish(value);
-        return true;
-    }
-    if(_pCells.at(2)->text() == value && _pCells.at(4)->text()== value && _pCells.at(6)->text() == value)
-    {
-        ch++;
-        emit finish(value);
-        return true;
-    }
-    if(ch==0 && _countNoEmptyCell == countCell)
-    {
-        _ch--;
-    }
-    if(_ch==0 && _countNoEmptyCell == countCell)
-    {
-        emit finish ("draw");
-        return true;
-    }
-        return false;
-}
 
 void MainWindow::onClickedReset()
 {
     emit newGame();
-}
-
-QList <QPushButton*> MainWindow::findCurrectCell()
-{
-   QList <QPushButton*> emplyCells;
-   foreach(QPushButton* cell, _pCells)
-   {
-       if (cell->text().isEmpty() == true)
-          emplyCells.append(cell);
-   }
-   return emplyCells;
-}
-
-void MainWindow::onStart()
-{
-   _countNoEmptyCell = 0;
-   _ch=2;
-    QPalette palette;
-   palette.setColor(QPalette::Background,Qt::yellow);
-   ui->labelPlayer->setPalette(palette);
-   palette.setColor(QPalette::Background,Qt::gray);
-   ui->labelComputer->setPalette(palette);
-   onblokField(true);
-}
-
-void MainWindow::onTic1()
-{
-    ui->pushButton_1->setText("X");
-    _countNoEmptyCell++;
-    if (onCheckForFinish("0") || onCheckForFinish("X"))
-            return;
-    emit personMoveIsComplited();
-
-}
-void MainWindow::onTic2()
-{
-    ui->pushButton_2->setText("X");
-    _countNoEmptyCell++;
-    if (onCheckForFinish("0") || onCheckForFinish("X"))
-            return;
-    emit personMoveIsComplited();
-
-}
-void MainWindow::onTic3()
-{
-    ui->pushButton_3->setText("X");
-    _countNoEmptyCell++;
-     if (onCheckForFinish("0") || onCheckForFinish("X"))
-             return;
-
-    emit personMoveIsComplited();
-
-}
-void MainWindow::onTic4()
-{
-    ui->pushButton_4->setText("X");
-    _countNoEmptyCell++;
-    if (onCheckForFinish("0") || onCheckForFinish("X"))
-            return;
-
-    emit personMoveIsComplited();
-
-}
-void MainWindow::onTic5()
-{
-    ui->pushButton_5->setText("X");
-    _countNoEmptyCell++;
-    if (onCheckForFinish("0") || onCheckForFinish("X"))
-            return;
-
-    emit personMoveIsComplited();
-
-}
-void MainWindow::onTic6()
-{
-    ui->pushButton_6->setText("X");
-    _countNoEmptyCell++;
-     if (onCheckForFinish("0") || onCheckForFinish("X"))
-             return;
-
-    emit personMoveIsComplited();
-
-}
-void MainWindow::onTic7()
-{
-    ui->pushButton_7->setText("X");
-    _countNoEmptyCell++;
-     if (onCheckForFinish("0") || onCheckForFinish("X"))
-             return;
-
-    emit personMoveIsComplited();
-
-}
-
-void MainWindow::onTic8()
-{
-    ui->pushButton_8->setText("X");
-    _countNoEmptyCell++;
-    if (onCheckForFinish("0") || onCheckForFinish("X"))
-            return;
-
-    emit personMoveIsComplited();
-
-}
-void MainWindow::onTic9()
-{
-    ui->pushButton_9->setText("X");
-    _countNoEmptyCell++;
-    if (onCheckForFinish("0") || onCheckForFinish("X"))
-            return;
-    emit personMoveIsComplited();
 }

@@ -15,6 +15,7 @@ public:
     explicit WinnerWindow(QDialog *parent = nullptr);
     ~WinnerWindow();
     void setLabelwinner(QString winner);
+
 public slots:
     void onClickedPushButtonNewGame();
 

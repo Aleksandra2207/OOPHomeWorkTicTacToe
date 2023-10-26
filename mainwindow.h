@@ -15,44 +15,34 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void passComputerMove();
-    void passPersonMove();
-    void computerMove();
+
+    //void computerMove();
     void setPlayerName(QString name);
     void increaseCounterPerson();
     void increaseCounterComputer();
     void cleanField();
+    QStringList getField();
 
 
 public slots:
-    void onStart();
-    void onTic1();
-    void onTic2();
-    void onTic3();
-    void onTic4();
-    void onTic5();
-    void onTic6();
-    void onTic7();
-    void onTic8();
-    void onTic9();
+    void onPassComputerMove();
+    void onPassPersonMove();
+    void onPushButtonCliked();
+    void onSetSingPlayer1(QString sign);
+    void onMakeComputerMove (int i, QString sign);
     void onblokField(bool isUnblok);
-    bool onCheckForFinish(QString value);
     void onClickedReset();
 
 signals:
-    void personMoveIsComplited();
-    void computerMoveIsComplited();
+    void doCheck(QStringList field, QString player);
     void newGame();
-    void finish(QString winner);
 
 
 private:
     Ui::MainWindow *ui;
     QList <QPushButton*> _pCells;
-    int _countNoEmptyCell;
-
+    QString _signPlayer1;
     void connections();
-    QList <QPushButton*> findCurrectCell();
-    int _ch=2;
+
 };
 #endif // MAINWINDOW_H

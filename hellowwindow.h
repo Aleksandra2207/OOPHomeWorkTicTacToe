@@ -15,13 +15,12 @@ public:
     explicit HellowWindow(QDialog *parent = nullptr);
     ~HellowWindow();
     QString getPlayerName();
+
 public slots:
-    QPushButton* onGetPushButtonStart();
     void onPushButtonStartClicked();
 
-private slots:
 signals:
-    void startGame();
+    void startGame(QString sign);
 
 private:
     Ui::HellowWindow *ui;
